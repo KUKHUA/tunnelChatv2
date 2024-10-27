@@ -1,4 +1,4 @@
-window.serverInstance = new URL('http://localhost:2427');
+window.serverInstance = new URL('https://lluck.hackclub.app');
 window.tunnelEventSource = [];
 window.featureFlags = {debug: true};
 window.tunnelAPI = {
