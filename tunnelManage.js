@@ -63,7 +63,7 @@ async function handleMessage(message) {
                         let fileBlob = new Blob([base64ToArrayBuffer(combinedData)],{ type: fileType });
                         fileURL = URL.createObjectURL(fileBlob);
                         console.log(fileURL,fileType);
-                        let renderedAttachment = renderAttachment(attachmentList, fileURL);
+                        let renderedAttachment = renderAttachment(attachmentList, fileURL.toString());
                         await localMessage('System', `Attachment received: ${renderedAttachment}`);
                         console.log(`Attachment received: ${attachmentList}`);
                         listenAttach.close(); // Stop listening on this subchannel
