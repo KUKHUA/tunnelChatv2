@@ -31,6 +31,7 @@ async function joinTunnel() {
         await localMessage('System', error.message);
     }
 }
+
 async function handleMessage(message) {
     try {
         let messageData = JSON.parse(message);
@@ -62,9 +63,7 @@ async function handleMessage(message) {
                         let combinedData = attachmentData.join('');
                         let fileBlob = new Blob([base64ToArrayBuffer(combinedData)],{ type: fileType });
                         fileURL = URL.createObjectURL(fileBlob);
-                        console.log(fileURL,fileType);
-                        let renderedAttachment = renderAttachment(attachmentList, fileURL.toString());
-                        await localMessage('System', `Attachment received: ${renderedAttachment}`);
+                        await localMessage('System', `Attachment received: ${renderAttachment(attachmentList, fileURL)}`);
                         console.log(`Attachment received: ${attachmentList}`);
                         listenAttach.close(); // Stop listening on this subchannel
                     }
@@ -96,7 +95,7 @@ function addAttachment() {
                 const subChannel = `attachment_${stringToHex(attachmentList)}`;
                 sendMessageApi('SYSTEM_ATTACHMENT:' + attachmentList + "_" + chunks + "_" + file.type);
 
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait for 1 second
 
                 for (let i = 0; i < chunks; i++) {
                     let chunk = attachmentData.slice(i * chunkSize, (i + 1) * chunkSize);
@@ -114,6 +113,7 @@ function addAttachment() {
 
 async function localMessage(name, message) {
     try {
+        console.log(name, message);
         let messageDiv = document.createElement("div");
         let userName = document.createElement("p");
         if (name === window.displayName) {

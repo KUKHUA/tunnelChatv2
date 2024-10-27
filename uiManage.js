@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     'th','thead', 'tbody', 'tfoot', 'caption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
                     'pre','code','blockquote', 'colgroup', 'col', 'dl','dt','dd'
                 ],
-                ALLOWED_ATTR: ['href', 'src'],
+                ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'controls', 'style', 'colspan', 'rowspan'],
+                ALLOWED_URI_REGEXP: /^(?:(?:ftp|http|https|mailto|tel|callto|sms|cid|xmpp|blob):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
                 FORBID_ATTR: ['style']
             });
         }
