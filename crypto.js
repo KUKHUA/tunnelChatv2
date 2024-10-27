@@ -22,33 +22,6 @@ async function generateKeys() {
     }
 }
 
-function stringToHex(string) {
-    try {
-        if (featureFlags.debug) console.log(`Converting string to hex: ${string}`);
-        return Array.from(new TextEncoder().encode(string))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-    } catch (error) {
-        localMessage(System, error.message);
-        return string;
-    }
-}
-
-function hexToString(hexString) {
-    try {
-        if (featureFlags.debug) console.log(`Converting hex string to string: ${hexString}`);
-        const hexArray = hexString.match(/.{1,2}/g);
-        if (!hexArray) {
-            throw new Error("Invalid hex string");
-        }
-        if (featureFlags.debug) console.log(new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16)))));
-        return new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16))));
-    } catch (error) {
-        localMessage(System, error.message);
-        return hexString;
-    }
-}
-
 function arrayBufferToHex(buffer) {
     try {
         if (featureFlags.debug) console.log("Converting ArrayBuffer to hex.");

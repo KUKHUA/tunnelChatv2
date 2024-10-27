@@ -13,7 +13,6 @@ window.tunnelAPI = {
 
         window.tunnelEventSource[subChannel] = new EventSource(eventURL.toString());
         window.tunnelEventSource[subChannel].onmessage = function(event){
-            if(featureFlags.debug) console.log(`Tunnel Event Source for ${tunnelId}-${subChannel} received message: ${event.data}.`);
             eventCallback(unescape(hexToString(event.data)));
         }
 
@@ -69,4 +68,47 @@ window.tunnelAPI = {
             if(featureFlags.debug) console.log(`The following data has been sent to ${tunnelId}-${subChannel}.`, messageData);
         })
     },
+}
+
+function escape(str){
+    try {
+        return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    } catch (error) {
+        localMessage("System", error.message);
+    }
+}
+
+function unescape(str){
+    try {
+        return str.replace(/\\\\"/g, '"').replace(/\\\\/g, '\\');
+    } catch (error) {
+        localMessage("System", error.message);
+    }
+}
+
+function stringToHex(string) {
+    try {
+        if (featureFlags.debug) console.log(`Converting string to hex: ${string}`);
+        return Array.from(new TextEncoder().encode(string))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    } catch (error) {
+        localMessage(System, error.message);
+        return string;
+    }
+}
+
+function hexToString(hexString) {
+    try {
+        if (featureFlags.debug) console.log(`Converting hex string to string: ${hexString}`);
+        const hexArray = hexString.match(/.{1,2}/g);
+        if (!hexArray) {
+            throw new Error("Invalid hex string");
+        }
+        if (featureFlags.debug) console.log(new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16)))));
+        return new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16))));
+    } catch (error) {
+        localMessage(System, error.message);
+        return hexString;
+    }
 }

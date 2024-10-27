@@ -52,19 +52,3 @@ function toggleElm(elm) {
         localMessage("System", error.message);
     }
 }
-
-function escape(str){
-    try {
-        return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    } catch (error) {
-        localMessage("System", error.message);
-    }
-}
-
-function unescape(str){
-    try {
-        return str.replace(/\\\\"/g, '"').replace(/\\\\/g, '\\');
-    } catch (error) {
-        localMessage("System", error.message);
-    }
-}
