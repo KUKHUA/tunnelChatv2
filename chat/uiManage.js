@@ -8,25 +8,41 @@ document.addEventListener("DOMContentLoaded", function() {
         window.clean = function(text){
             return DOMPurify.sanitize(text, {
                 ADD_DATA_URI_TAGS: ['a', 'img', 'video', 'audio'], 
-                ALLOWED_TAGS: ['i', 'a', 'b', 'p', 'img', 'br', 'video', 'strong', 'audio', 'tabel', 'tr', 'td',
-                    'th','thead', 'tbody', 'tfoot', 'caption', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li',
-                    'pre','code','blockquote', 'colgroup', 'col', 'dl','dt','dd'
+                ALLOWED_TAGS: ['i', 'a', 'b', 'p', 'img', 'br', 'video', 'strong', 'audio',
+                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code','blockquote'
                 ],
-                ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'controls', 'style', 'colspan', 'rowspan'],
+                ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'controls'],
                 ALLOWED_URI_REGEXP: /^(?:(?:ftp|http|https|mailto|tel|callto|sms|cid|xmpp|blob):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
-                FORBID_ATTR: ['style']
+                FORBID_ATTR: ['style','class']
             });
         }
-        
-        const element = document.getElementById("createOrJoin");
-        const clonedElement = element.cloneNode(true);
-        clonedElement.classList.remove("hideme");
 
-        new WinBox("Mount DOM", {
-            modal: true,
-            class: "body",
-            mount: clonedElement
+        //Get search params
+        const urlParams = new URLSearchParams(window.location.search);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        window.displayName = urlParams.get('username') ? urlParams.get('username') : "Anonymous";
+        if(window.displayName.length > 20){
+            alert("Name length should be less than 20 characters.");
+            changeName();
+        }
+        let debug = urlParams.get('debug') ? true : false;
+        let encryption = urlParams.get('encryption') ? true : false;
+        window.serverInstance = new URL('https://lluck.hackclub.app');
+        window.featureFlags = {debug: debug, encryption: encryption};
+
+        if(urlParams.get('intent') == 'join'){
+            document.getElementById('openModal').click();
+        } else {
+            if(window.displayName == "Anonymous") changeName();
+            createTunnel();
+        }
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key == "Enter" && event.altKey){
+                sendMessage();
+            }
         });
+
     } catch (error) {
         localMessage("System", error.message);
     }
@@ -37,6 +53,11 @@ function changeName(){
         let olderUserName = window.displayName;
         let newUserName = prompt("Enter a new name", window.displayName);
         if (newUserName === null || newUserName === "") return;
+        if(newUserName.length > 20){
+            alert("Name length should be less than 20 characters.");
+            changeName();
+            return;
+        }
         window.displayName = newUserName;
         window.userNameHeader.innerText = `You are ${window.displayName}`;
         sendMessageApi(`I changed my name from ${olderUserName} to ${window.displayName}.`);

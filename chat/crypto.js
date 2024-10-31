@@ -18,27 +18,7 @@ async function generateKeys() {
         window.keys = { [window.userID]: { publicKey: arrayBufferToHex(await window.crypto.subtle.exportKey("spki", window.keyPair.publicKey)) } };
         if (featureFlags.debug) console.log("Keys stored:", window.keys);
     } catch (error) {
-        localMessage(System, error.message);
-    }
-}
-
-function arrayBufferToHex(buffer) {
-    try {
-        if (featureFlags.debug) console.log("Converting ArrayBuffer to hex.");
-        return Array.from(new Uint8Array(buffer))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-    } catch (error) {
-        localMessage(System, error.message);
-    }
-}
-
-function hexToArrayBuffer(hexString) {
-    try {
-        if (featureFlags.debug) console.log(`Converting hex string to ArrayBuffer: ${hexString}`);
-        return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
     }
 }
 
@@ -68,7 +48,7 @@ function handleKeyExchange(event) {
 
         sendKeys();
     } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
     }
 }
 
@@ -79,7 +59,7 @@ function sendKeys() {
         window.tunnelAPI.sendData(window.tunnelID, 'keyExchange', JSON.stringify(keyExchangeData));
         if (featureFlags.debug) console.log("Keys sent:", keyExchangeData);
     } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
     }
 }
 
@@ -107,7 +87,7 @@ async function encryptData(data, publicKey) {
         if (featureFlags.debug) console.log("Data encrypted.");
         return arrayBufferToHex(encryptedData);
     } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
     }
 }
 
@@ -125,7 +105,29 @@ async function decryptData(data, privateKey) {
         if (featureFlags.debug) console.log("Data decrypted." + new TextDecoder().decode(decryptedData));
         return new TextDecoder().decode(decryptedData);
     } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
+    }
+}
+
+function hexToArrayBuffer(hex) {
+    try {
+        if (featureFlags.debug) console.log("Converting hex to ArrayBuffer.");
+        let bytes = new Uint8Array(Math.ceil(hex.length / 2));
+        for (let i = 0; i < bytes.length; i++) {
+            bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+        }
+        return bytes.buffer;
+    } catch (error) {
+        localMessage('System', error.message,false,true);
+    }
+}
+
+function arrayBufferToHex(buffer) {
+    try {
+        if (featureFlags.debug) console.log("Converting ArrayBuffer to hex.");
+        return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+    } catch (error) {
+        localMessage('System', error.message,false,true);
     }
 }
 
@@ -140,6 +142,6 @@ function base64ToArrayBuffer(base64) {
         }
         return bytes.buffer;
     } catch (error) {
-        localMessage(System, error.message);
+        localMessage('System', error.message,false,true);
     }
 }

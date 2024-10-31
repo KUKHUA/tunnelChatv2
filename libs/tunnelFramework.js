@@ -1,6 +1,6 @@
 window.serverInstance = new URL('https://lluck.hackclub.app');
 window.tunnelEventSource = [];
-window.featureFlags = {debug: true};
+window.featureFlags = {debug: true, encryption: true};
 window.tunnelAPI = {
     startStreaming: function(tunnelId, subChannel, eventCallback){
         if(!tunnelId) return;
@@ -13,7 +13,8 @@ window.tunnelAPI = {
 
         window.tunnelEventSource[subChannel] = new EventSource(eventURL.toString());
         window.tunnelEventSource[subChannel].onmessage = function(event){
-            eventCallback(unescape(hexToString(event.data)));
+            const data = featureFlags.encryption ? unescape(hexToString(event.data)) : hexToString(event.data);
+            eventCallback(data);
         }
 
         if(featureFlags.debug){
@@ -48,11 +49,13 @@ window.tunnelAPI = {
         }
     },
 
-    sendData: function(tunnelId, subChannel, messageData){
+    sendData: function(tunnelId, subChannel, messageData, encryptOverride){
         if(!tunnelId || !messageData) return;
         if(!subChannel) subChannel = 'main';
         const sendDataURL = new URL(`/api/v2/tunnel/send`, serverInstance);
         
+        let content = featureFlags.encryption ? escape(stringToHex(messageData)) : stringToHex(messageData);
+        if(encryptOverride) content = messageData;
         fetch(sendDataURL, {
             method: 'POST',
             headers: {
@@ -61,7 +64,7 @@ window.tunnelAPI = {
             body: JSON.stringify({
                 id: tunnelId,
                 subChannel: subChannel,
-                content: escape(stringToHex(messageData))
+                content: content
             })
         })
         .then(messageData => {
@@ -74,7 +77,7 @@ function escape(str){
     try {
         return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     } catch (error) {
-        localMessage("System", error.message);
+        alert("System", error.message);
     }
 }
 
@@ -82,7 +85,7 @@ function unescape(str){
     try {
         return str.replace(/\\\\"/g, '"').replace(/\\\\/g, '\\');
     } catch (error) {
-        localMessage("System", error.message);
+        alert("System", error.message);
     }
 }
 
@@ -93,7 +96,7 @@ function stringToHex(string) {
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
     } catch (error) {
-        localMessage(System, error.message);
+        alert(System, error.message);
         return string;
     }
 }
@@ -108,7 +111,7 @@ function hexToString(hexString) {
         if (featureFlags.debug) console.log(new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16)))));
         return new TextDecoder().decode(new Uint8Array(hexArray.map(byte => parseInt(byte, 16))));
     } catch (error) {
-        localMessage(System, error.message);
+        alert(System, error.message);
         return hexString;
     }
 }
