@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../libs/googleFont/icon.css"/>
     <link href="../libs/googleFont/font.css" rel="stylesheet">
     <link rel="stylesheet" href="../libs/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
     <script src="../libs/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../libs/bootstrap/popper.min.js"></script>
     <script src="../libs/marked.min.js.js"></script>
@@ -16,6 +17,7 @@
     <script src="uiManage.js"></script>
     <script src="tunnelManage.js"></script>
     <script src="crypto.js"></script>
+
     <style>
         .hideme {
             display: none;
@@ -46,9 +48,9 @@
       </div>
     <div class="mt-4">
         <h1 id="appNameHeader" class="display-4">Tunnel Chat</h1>
-        <h2 id="userNameHeader" class="h5">You are... not in a tunnel.</h2>
+        <h2 id="userNameHeader" class="h5" onclick="changeName();" >You are... not in a tunnel.</h2>
 
-        <div id="chatDisplayDiv" class="border p-3 mb-3"></div>
+        <div id="chatDisplayDiv" class="border p-3 mb-3 overflow-auto "></div>
         <div class="input-group mb-3">
             <textarea id="messageBoxTextArea" class="form-control" placeholder="Enter your message here&#10;You can use MarkDown and HTML.&#10;Don't try scripts though."></textarea>
             <button id="addAttachmentButton" class="btn btn-outline-secondary" onclick="addAttachment()"><span class="material-symbols-outlined">attach_file</span></button>

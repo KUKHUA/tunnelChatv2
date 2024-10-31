@@ -24,6 +24,7 @@ async function handleMessage(message) {
         const decryptedMessage = await decryptMessage(messageData);
         if (messageData.userID == window.userID) return;
         await localMessage(messageData.displayName, decryptedMessage, false, false);
+        window.chatDisplayDiv.scrollTop = window.chatDisplayDiv.scrollHeight;
     } catch (error) {
         handleError(error);
     }
