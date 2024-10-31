@@ -35,33 +35,11 @@ input:focus {
     display: flex;
     flex-direction: column;
 }
-    /* Custom scrollbar styles */
-    #chatDisplayDiv::-webkit-scrollbar {
-        width: 12px;
-    }
-
-    #chatDisplayDiv::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    #chatDisplayDiv::-webkit-scrollbar-thumb {
-        background: #888;
-    }
-
-    #chatDisplayDiv::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-
-
-
 #userNameHeader:hover {
     cursor: pointer;
     color: #5a5858;
     transition: 0.5s;
 }
-
-
-
 
 img {
     max-width: 40vw;
